@@ -11,6 +11,8 @@ use std::fs;
 pub(crate) async fn handler(ctx: State<Config>, uri: Uri) -> Result<Html<String>, StatusCode> {
     let path = uri.path();
     let path = path.trim_start_matches('/').trim_end_matches('/');
+    let path = if path.is_empty() { "index" } else { path };
+
     let filename = ctx.folder.join(format!("{path}.md"));
 
     if filename.exists() {
