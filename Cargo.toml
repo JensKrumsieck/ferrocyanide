@@ -1,0 +1,9 @@
+[package]
+name = "ferrocyanide"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+markdown = { version = "1.0.0", features = ["serde"] }
+serde_yaml = "0.9.34"
+tera = "1.20.0"
