@@ -1,13 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-    {% block head %}
-    <title>{{ title }}</title>
-    {% endblock head %}
-</head>
-<body>
-    <div class="container">
-        {{ content | safe }}
-    </div>
-</body>
-</html>
+{%extends "base.html" %}
+{% block content %}{{content | safe}}{% endblock %}
+{% block title %}{{title}}{% endblock %}
