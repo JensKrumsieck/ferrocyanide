@@ -1,6 +1,13 @@
 pub(crate) mod router;
 
 use crate::config::Config;
+use axum::{
+    extract::{Path, Request},
+    http::StatusCode,
+    middleware::{self, Next},
+    response::{IntoResponse, Redirect},
+    routing::get,
+};
 use router::handler;
 use std::{fs, path::PathBuf};
 use tokio::net::TcpListener;
@@ -16,7 +23,7 @@ pub struct AppConfig {
 
 pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
     let folder = folder.unwrap_or(PathBuf::from("content"));
-    
+
     let cfg = if folder.join("ferrocyanide.yaml").exists() {
         let config_file = fs::read_to_string(folder.join("ferrocyanide.yaml"))?;
         serde_yaml::from_str::<Config>(&config_file).unwrap_or_default()
@@ -46,11 +53,25 @@ pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
         .nest_service("/assets", ServeDir::new(config.folder.join("assets")))
         .fallback(handler)
         .with_state(config)
-        .layer(TraceLayer::new_for_http().on_failure(()));
+        .layer(TraceLayer::new_for_http().on_failure(()))
+        .layer(middleware::from_fn(redirect_index));
 
     let listener = TcpListener::bind("0.0.0.0:8192").await?;
 
     info!("Listening on http://{}", listener.local_addr()?);
     axum::serve(listener, app).await?;
     Ok(())
+}
+
+async fn redirect_index(req: Request, next: Next) -> Result<impl IntoResponse, StatusCode> {
+    let path = req.uri().path();
+    if let Some(stripped) = path.strip_suffix("/index") {
+        let new_location = if stripped.is_empty() {
+            "/".to_string()
+        } else {
+            format!("{}/", stripped.trim_end_matches('/'))
+        };
+        return Ok(Redirect::permanent(&new_location).into_response());
+    }
+    Ok(next.run(req).await)
 }
