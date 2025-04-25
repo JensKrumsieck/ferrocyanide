@@ -2,11 +2,10 @@ pub(crate) mod router;
 
 use crate::config::Config;
 use axum::{
-    extract::{Path, Request},
+    extract::Request,
     http::StatusCode,
     middleware::{self, Next},
     response::{IntoResponse, Redirect},
-    routing::get,
 };
 use router::handler;
 use std::{fs, path::PathBuf};
@@ -74,6 +73,6 @@ async fn redirect_index(req: Request, next: Next) -> Result<impl IntoResponse, S
         };
         return Ok(Redirect::permanent(&new_location).into_response());
     }
-    
+
     Ok(next.run(req).await)
 }
