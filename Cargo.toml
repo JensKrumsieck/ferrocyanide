@@ -8,7 +8,7 @@ anyhow = "1.0.98"
 axum = "0.8.3"
 bon = "3.6.3"
 clap = { version = "4.5.37", features = ["derive"] }
-markdown = { version = "1.0.0", features = ["serde"] }
+comrak = "0.38.0"
 serde_yaml = "0.9.34"
 tera = "1.20.0"
 tokio = { version = "1.44.2", features = ["macros", "rt-multi-thread"] }

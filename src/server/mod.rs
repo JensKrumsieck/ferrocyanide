@@ -1,5 +1,6 @@
 pub(crate) mod router;
 
+use axum::handler::Handler;
 use bon::Builder;
 use router::handler;
 use std::path::PathBuf;
@@ -32,9 +33,9 @@ pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
         .init();
 
     let app = axum::Router::new()
-        .nest_service("/assets", ServeDir::new(config.folder.join("assets")))
-        .fallback(handler)
-        .with_state(config)
+        .fallback_service(
+            ServeDir::new("static").not_found_service(Handler::with_state(handler, config)),
+        )
         .layer(TraceLayer::new_for_http().on_failure(()));
 
     let listener = TcpListener::bind("0.0.0.0:8192").await?;
