@@ -1,7 +1,3 @@
----
-title: Ferrocyanide
----
-
 # Welcome to Ferrocyanide
 Ferrocyanide is a small `proof-of-concept` Static-Site-Generator written in ![Rust][rust-image] 
 

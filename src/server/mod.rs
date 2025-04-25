@@ -1,23 +1,33 @@
 pub(crate) mod router;
 
-use axum::handler::Handler;
-use bon::Builder;
+use crate::config::Config;
 use router::handler;
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 use tokio::net::TcpListener;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[derive(Default, Builder, Clone, Debug)]
-pub struct Config {
+#[derive(Default, Clone, Debug)]
+pub struct AppConfig {
     pub folder: PathBuf,
+    pub config: Config,
 }
 
 pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
-    let config = Config::builder()
-        .folder(folder.unwrap_or(PathBuf::from("content")))
-        .build();
+    let folder = folder.unwrap_or(PathBuf::from("content"));
+    
+    let cfg = if folder.join("ferrocyanide.yaml").exists() {
+        let config_file = fs::read_to_string(folder.join("ferrocyanide.yaml"))?;
+        serde_yaml::from_str::<Config>(&config_file).unwrap_or_default()
+    } else {
+        Config::default()
+    };
+
+    let config = AppConfig {
+        folder,
+        config: cfg,
+    };
 
     tracing_subscriber::registry()
         .with(
@@ -33,9 +43,9 @@ pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
         .init();
 
     let app = axum::Router::new()
-        .fallback_service(
-            ServeDir::new("static").not_found_service(Handler::with_state(handler, config)),
-        )
+        .nest_service("/assets", ServeDir::new(config.folder.join("assets")))
+        .fallback(handler)
+        .with_state(config)
         .layer(TraceLayer::new_for_http().on_failure(()));
 
     let listener = TcpListener::bind("0.0.0.0:8192").await?;

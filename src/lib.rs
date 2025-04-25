@@ -3,17 +3,21 @@ use comrak::{
     Arena, ComrakPlugins, Options, format_html_with_plugins, nodes::NodeValue, parse_document,
     plugins,
 };
+use config::Config;
 use serde_yaml::Value;
 use std::collections::HashMap;
 use tera::Tera;
 
 pub mod cli;
+pub mod config;
 pub mod server;
 
-pub fn render(markdown: &str) -> anyhow::Result<String> {
+pub fn render(markdown: &str, config: &Config) -> anyhow::Result<String> {
     let tera = Tera::new("templates/**/*")?;
     let mut template = String::from("layout.html");
     let mut context = tera::Context::new();
+
+    context.insert("config", &config);
 
     if let Some(fm) = extract_frontmatter(markdown) {
         let yml = serde_yaml::from_str::<HashMap<String, Value>>(fm)?;
