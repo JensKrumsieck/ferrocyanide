@@ -65,6 +65,7 @@ pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
 
 async fn redirect_index(req: Request, next: Next) -> Result<impl IntoResponse, StatusCode> {
     let path = req.uri().path();
+    let path = path.strip_suffix("/").unwrap_or(path);
     if let Some(stripped) = path.strip_suffix("/index") {
         let new_location = if stripped.is_empty() {
             "/".to_string()
@@ -73,5 +74,6 @@ async fn redirect_index(req: Request, next: Next) -> Result<impl IntoResponse, S
         };
         return Ok(Redirect::permanent(&new_location).into_response());
     }
+    
     Ok(next.run(req).await)
 }
