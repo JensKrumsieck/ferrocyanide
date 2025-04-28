@@ -1,6 +1,6 @@
 pub(crate) mod router;
 
-use crate::config::Config;
+use crate::config::{AppConfig, ProjectConfig, get_config_path};
 use axum::{
     extract::Request,
     http::StatusCode,
@@ -14,36 +14,23 @@ use tower_http::{services::ServeDir, trace::TraceLayer};
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-#[derive(Default, Clone, Debug)]
-pub struct AppConfig {
-    pub folder: PathBuf,
-    pub config: Config,
-}
-
 pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
     let folder = folder.unwrap_or(PathBuf::from("content"));
+    let config_file = get_config_path(&folder);
 
-    let cfg = if folder.join("ferrocyanide.yaml").exists() {
-        let config_file = fs::read_to_string(folder.join("ferrocyanide.yaml"))?;
-        serde_yaml::from_str::<Config>(&config_file).unwrap_or_default()
+    let project_config = if config_file.exists() {
+        let config_file = fs::read_to_string(config_file)?;
+        toml::from_str::<ProjectConfig>(&config_file).unwrap_or_default()
     } else {
-        Config::default()
+        ProjectConfig::default()
     };
 
-    let config = AppConfig {
-        folder,
-        config: cfg,
-    };
+    let config = AppConfig { folder, project_config };
 
     tracing_subscriber::registry()
         .with(
-            tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
-                format!(
-                    "{}=debug,tower_http=debug,axum::rejection=trace",
-                    env!("CARGO_CRATE_NAME")
-                )
-                .into()
-            }),
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| format!("{}=debug,tower_http=debug,axum::rejection=trace", env!("CARGO_CRATE_NAME")).into()),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();

@@ -1,23 +1,20 @@
 use anyhow::Context;
-use comrak::{
-    Anchorizer, Arena, ComrakPlugins, Options, format_html_with_plugins, html, nodes::NodeValue,
-    parse_document, plugins,
-};
-use config::Config;
+use comrak::{Anchorizer, Arena, ComrakPlugins, Options, format_html_with_plugins, html, nodes::NodeValue, parse_document, plugins};
+use config::AppConfig;
 use serde_yaml::Value;
-use std::collections::HashMap;
+use std::{cmp::Ordering, collections::HashMap};
 use tera::Tera;
 
 pub mod cli;
 pub mod config;
 pub mod server;
 
-pub fn render(markdown: &str, config: &Config) -> anyhow::Result<String> {
-    let tera = Tera::new("templates/**/*")?;
+pub fn render(markdown: &str, config: &AppConfig) -> anyhow::Result<String> {
+    let tera = Tera::new(&format!("{}/templates/**/*", config.folder.to_string_lossy()))?;
     let mut template = String::from("layout.html");
     let mut context = tera::Context::new();
 
-    context.insert("config", &config);
+    context.insert("config", &config.project_config);
 
     if let Some(fm) = extract_frontmatter(markdown) {
         let yml = serde_yaml::from_str::<HashMap<String, Value>>(fm)?;
@@ -89,20 +86,21 @@ fn render_toc(headings: &[(u8, String, String)]) -> String {
     let mut last_level = 0;
 
     for (level, id, text) in headings {
-        if *level > last_level {
-            toc.push_str(&format!("<ul class=\"toc-level-{}\">\n", level));
-        } else if *level < last_level {
-            toc.push_str(&format!("</ul>\n"));
+        match level.cmp(&last_level) {
+            Ordering::Greater => {
+                toc.push_str(&format!("<ul class=\"toc-level-{}\">\n", level));
+            }
+            Ordering::Less => {
+                toc.push_str("</ul>\n");
+            }
+            Ordering::Equal => {}
         }
-        toc.push_str(&format!(
-            "<li><a href=\"#{}\">{}</a></li>\n",
-            id, text
-        ));
+        toc.push_str(&format!("<li><a href=\"#{}\">{}</a></li>\n", id, text));
         last_level = *level;
     }
 
     while last_level > 0 {
-        toc.push_str(&format!("</ul>\n"));
+        toc.push_str("</ul>\n");
         last_level -= 1;
     }
 

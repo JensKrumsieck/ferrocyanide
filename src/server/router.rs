@@ -16,9 +16,8 @@ pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> Result<Html<Stri
     let filename = ctx.folder.join(format!("{path}.md"));
 
     if filename.exists() {
-        let content =
-            fs::read_to_string(filename).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-        let html = render(&content, &ctx.config).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let content = fs::read_to_string(filename).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        let html = render(&content, &ctx).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
         Ok(Html(html))
     } else {
