@@ -5,9 +5,9 @@
     <meta charset="utf-8">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{% block description %}{{ config.project.description }}{% endblock description %}">
+    <meta name="description"
+        content="{% block description %}{{ config.project.description }}{% endblock description %}">
     <meta name="color-scheme" content="light dark">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" />
     {% block head %}
     <title>{% block title %}{{config.project.title}}{% endblock %}</title>
     {% endblock head %}
@@ -15,28 +15,7 @@
 
 <body>
     <header class="container">
-        <nav role="navigation" data-position="end" data-breakpoint="lg">
-            <hgroup>
-                <img src="/assets/logo.png" alt="Logo" class="logo" />
-            </hgroup>
-            <ul>
-                <li>
-                    <label>
-                        <input name="color-mode-toggle" role="switch" type="checkbox" value="1"
-                            aria-label="Toggle Light or Dark Mode">
-                    </label>
-                </li>
-            </ul>
-            <input type="checkbox" id="hamburger" />
-            <label for="hamburger" style="font-size: calc(var(--pico-font-size) * 1.5);">&#x2261;</label>
-            <ul role="list">
-                <li role="listitem"><a href="#" class="contrast">About</a></li>
-                <li role="listitem"><a href="#" class="contrast">Services</a></li>
-                <li role="listitem"><a href="#" class="contrast">Products</a></li>
-                <li role="listitem"><a href="#" class="contrast">Products</a></li>
-                <li role="listitem"><a href="#">Products</a></li>
-            </ul>
-        </nav>
+        {% block header %}{% endblock %}
     </header>
     <main class="container">
         {% block content %}{% endblock %}

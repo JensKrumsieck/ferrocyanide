@@ -1,6 +1,7 @@
 use anyhow::Context;
 use comrak::{Anchorizer, Arena, ComrakPlugins, Options, format_html_with_plugins, html, nodes::NodeValue, parse_document, plugins};
 use config::AppConfig;
+use once_cell::sync::Lazy;
 use serde_yaml::Value;
 use std::{cmp::Ordering, collections::HashMap};
 use tera::Tera;
@@ -9,8 +10,23 @@ pub mod cli;
 pub mod config;
 pub mod server;
 
+pub static TEMPLATES: Lazy<Tera> = Lazy::new(|| {
+    let mut tera = Tera::default();
+    tera.add_raw_templates(vec![("_builtins/404.html", include_str!("builtins/404.html"))])
+        .unwrap();
+    tera
+});
+
+pub fn load_templates(config: &AppConfig) -> anyhow::Result<Tera> {
+    let mut tera = Tera::parse(&format!("{}/templates/**/*", config.folder.to_string_lossy()))?;
+    tera.extend(&TEMPLATES)?;
+    tera.build_inheritance_chains()?;
+
+    Ok(tera)
+}
+
 pub fn render(markdown: &str, config: &AppConfig) -> anyhow::Result<String> {
-    let tera = Tera::new(&format!("{}/templates/**/*", config.folder.to_string_lossy()))?;
+    let tera = load_templates(config)?;
     let mut template = String::from("layout.html");
     let mut context = tera::Context::new();
 

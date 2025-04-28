@@ -554,6 +554,7 @@ dependencies = [
  "bon",
  "clap",
  "comrak",
+ "once_cell",
  "serde",
  "serde_yaml",
  "tera",
