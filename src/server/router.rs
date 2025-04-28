@@ -13,7 +13,8 @@ pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> Result<Html<Stri
     let path = path.trim_start_matches('/').trim_end_matches('/');
     let path = if path.is_empty() { "index" } else { path };
 
-    let filename = ctx.folder.join(format!("{path}.md"));
+    let content_dir = ctx.folder.join("content");
+    let filename = content_dir.join(format!("{path}.md"));
 
     if filename.exists() {
         let content = fs::read_to_string(filename).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
