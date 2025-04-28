@@ -8,7 +8,6 @@ use axum::{
     middleware::{self, Next},
     response::{Html, IntoResponse, Redirect},
 };
-use std::fs;
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
 pub(crate) fn app(config: AppConfig) -> Router {
@@ -28,11 +27,14 @@ pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> Result<Html<Stri
     let content_dir = ctx.folder.join("content");
     let filename = content_dir.join(format!("{path}.md"));
 
-    if filename.exists() {
-        let content = fs::read_to_string(filename).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-        let html = render(&content, &ctx).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+    let filename = if filename.exists() {
+        filename
+    } else {
+        content_dir.join(format!("{path}/index.md"))
+    };
 
-        Ok(Html(html))
+    if filename.exists() {
+        Ok(Html(render(&filename, &ctx).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?))
     } else {
         Err(StatusCode::NOT_FOUND)
     }
