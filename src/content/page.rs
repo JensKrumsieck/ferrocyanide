@@ -1,7 +1,6 @@
-use serde::Serialize;
-
 use super::{frontmatter::Frontmatter, markdown::render_html};
-use std::{fs, path::PathBuf};
+use serde::Serialize;
+use std::{cmp::Ordering, fs, path::PathBuf};
 
 #[derive(Default, Clone, Debug, Serialize)]
 pub struct Page {
@@ -31,7 +30,7 @@ impl Page {
         let mut frontmatter = Frontmatter::read(content).unwrap_or_default();
 
         let html = render_html(content, &mut headings, &mut frontmatter)?;
-        headings = build_heading_tree(&headings);
+        headings = build_tree(&headings);
 
         Ok(Page {
             frontmatter,
@@ -41,29 +40,22 @@ impl Page {
     }
 }
 
-fn build_heading_tree(flat: &[PageHeading]) -> Vec<PageHeading> {
-    let mut stack: Vec<(u8, PageHeading)> = vec![];
-    let mut roots = vec![];
+fn build_tree(flat: &[PageHeading]) -> Vec<PageHeading>{
+    let mut tree = vec![];
+    let mut last_item: Option<&mut PageHeading> = None;
 
-    for heading in flat {
-        while let Some((lvl, _)) = stack.last() {
-            if *lvl < heading.level {
-                break;
+    for item in flat {
+        if let Some(last) = &mut last_item {
+            match item.level.cmp(&last.level) {
+                Ordering::Greater => last.children.push(item.clone()),
+                _ => tree.push(item.clone()),
             }
-            stack.pop();
-        }
-
-        if let Some((_, parent)) = stack.last_mut() {
-            parent.children.push(heading.clone());
         } else {
-            roots.push(heading.clone());
+            tree.push(item.clone());
         }
-
-        stack.push((heading.level, heading.clone()));
+        last_item = tree.last_mut();
     }
-
-    println!("{roots:?}");
-    roots
+    tree 
 }
 
 #[cfg(test)]

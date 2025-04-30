@@ -20,7 +20,7 @@
     </header>
     {% block upper_containers %}{%endblock %}
     <main class="container">
-        {% include "components/toc.html" %}
+        {% include "__builtins/toc.html" %}
         {% block content %}{{content | safe}}{% endblock %}
     </main>
     <script type="text/javascript" src="https://yohn.github.io/PicoCSS/js/SwitchColorMode.js"></script>

@@ -1,7 +1,0 @@
-<li>
-    {{item}}
-    <a href="#{{ item.id }}">{{ item.title }}</a>
-    {% if item.children | length > 0 %}
-    {% include "components/toc-item.html" %}
-    {% endif %}
-</li>

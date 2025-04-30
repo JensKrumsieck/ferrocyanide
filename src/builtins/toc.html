@@ -1,0 +1,11 @@
+{% if page.outline | length > 0 %}
+<aside class="toc">
+    <nav>
+        <ul>
+            {% for item in page.outline %}
+            {% include "__builtins/toc-item.html" %}
+            {% endfor %}
+        </ul>
+    </nav>
+</aside>
+{% endif %}

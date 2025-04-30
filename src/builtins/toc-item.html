@@ -1,0 +1,12 @@
+<li class="level-{{ item.level }}">
+    <a href="#{{ item.id }}">{{ item.title }}</a>
+    {% if item.children | length > 0 %}
+    <nav>
+        <ul>
+            {% for item in item.children %}
+            {% include "__builtins/toc-item.html" %}
+            {%endfor%}
+        </ul>
+    </nav>
+    {% endif %}
+</li>

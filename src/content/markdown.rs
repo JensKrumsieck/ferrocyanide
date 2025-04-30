@@ -9,7 +9,7 @@ pub fn render_html(content: &str, headings: &mut Vec<PageHeading>, frontmatter: 
     //TODO: Global Options based on config
     let mut options = Options::default();
     options.extension.front_matter_delimiter = Some("---".to_string());
-    options.extension.header_ids = Some("h-".to_string());
+    options.extension.header_ids = Some("".to_string());
 
     let arena = Arena::new();
     let root = parse_document(&arena, content, &options);
