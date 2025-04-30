@@ -3,6 +3,7 @@ use std::path::Path;
 
 pub mod cli;
 pub mod config;
+pub mod content;
 pub mod rendering;
 pub mod server;
 pub mod templates;

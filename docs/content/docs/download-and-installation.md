@@ -1,5 +1,4 @@
 ---
-title: Download and Installation
 category: b53a821a-2f11-4695-8bc9-56e34e5d1e5d
 priority: 999
 image: /icon.png

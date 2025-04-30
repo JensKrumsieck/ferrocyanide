@@ -1,6 +1,9 @@
 pub(crate) mod router;
 
-use crate::config::{AppConfig, ProjectConfig, get_config_path};
+use crate::{
+    config::{AppConfig, ProjectConfig, get_config_path},
+    content,
+};
 use router::app;
 use std::{fs, path::PathBuf};
 use tokio::net::TcpListener;
@@ -34,6 +37,12 @@ fn read_config(folder: Option<PathBuf>) -> anyhow::Result<AppConfig> {
     } else {
         ProjectConfig::default()
     };
+    
+    let library = content::read_files(&folder)?;
 
-    Ok(AppConfig { folder, project_config })
+    Ok(AppConfig {
+        folder,
+        project_config,
+        library,
+    })
 }

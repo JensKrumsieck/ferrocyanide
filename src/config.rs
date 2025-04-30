@@ -1,6 +1,8 @@
-use std::path::{Path, PathBuf};
+use std::{collections::HashMap, path::{Path, PathBuf}};
 
 use serde::{Deserialize, Serialize};
+
+use crate::content::page::Page;
 
 pub fn get_config_path(project_dir: impl AsRef<Path>) -> PathBuf {
     project_dir.as_ref().join("config.toml")
@@ -9,6 +11,7 @@ pub fn get_config_path(project_dir: impl AsRef<Path>) -> PathBuf {
 #[derive(Default, Clone, Debug)]
 pub struct AppConfig {
     pub folder: PathBuf,
+    pub library: HashMap<PathBuf, Page>,
     pub project_config: ProjectConfig,
 }
 
