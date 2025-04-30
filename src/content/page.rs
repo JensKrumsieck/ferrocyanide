@@ -41,18 +41,11 @@ impl Page {
     }
 }
 
-pub fn build_heading_tree(flat: &[PageHeading]) -> Vec<PageHeading> {
-    let mut stack: Vec<(u8, Rc<RefCell<PageHeading>>)> = vec![];
-    let mut roots: Vec<Rc<RefCell<PageHeading>>> = vec![];
+fn build_heading_tree(flat: &[PageHeading]) -> Vec<PageHeading> {
+    let mut stack: Vec<(u8, PageHeading)> = vec![];
+    let mut roots = vec![];
 
     for heading in flat {
-        let node = Rc::new(RefCell::new(PageHeading {
-            level: heading.level,
-            id: heading.id.clone(),
-            title: heading.title.clone(),
-            children: vec![],
-        }));
-
         while let Some((lvl, _)) = stack.last() {
             if *lvl < heading.level {
                 break;
@@ -60,16 +53,17 @@ pub fn build_heading_tree(flat: &[PageHeading]) -> Vec<PageHeading> {
             stack.pop();
         }
 
-        if let Some((_, parent)) = stack.last() {
-            parent.borrow_mut().children.push(node.borrow().clone());
+        if let Some((_, parent)) = stack.last_mut() {
+            parent.children.push(heading.clone());
         } else {
-            roots.push(Rc::clone(&node));
+            roots.push(heading.clone());
         }
 
-        stack.push((heading.level, node));
+        stack.push((heading.level, heading.clone()));
     }
 
-    roots.into_iter().map(|rc| rc.borrow().clone()).collect()
+    println!("{roots:?}");
+    roots
 }
 
 #[cfg(test)]
