@@ -1,11 +1,11 @@
-use super::{frontmatter::Frontmatter, page::PageHeadings};
+use super::{frontmatter::Frontmatter, page::PageHeading};
 use comrak::{
     Anchorizer, Arena, ComrakPlugins, Options, format_html_with_plugins, html,
     nodes::{AstNode, NodeValue},
     parse_document, plugins,
 };
 
-pub fn render_html(content: &str, headings: &mut Vec<PageHeadings>, frontmatter: &mut Frontmatter) -> anyhow::Result<String> {
+pub fn render_html(content: &str, headings: &mut Vec<PageHeading>, frontmatter: &mut Frontmatter) -> anyhow::Result<String> {
     //TODO: Global Options based on config
     let mut options = Options::default();
     options.extension.front_matter_delimiter = Some("---".to_string());
@@ -41,7 +41,7 @@ pub fn render_html(content: &str, headings: &mut Vec<PageHeadings>, frontmatter:
     String::from_utf8(html).map_err(|e| anyhow::anyhow!("Failed to convert HTML to UTF-8: {}", e))
 }
 
-fn extract_headings<'a>(root: &'a AstNode<'a>, headings: &mut Vec<PageHeadings>) {
+fn extract_headings<'a>(root: &'a AstNode<'a>, headings: &mut Vec<PageHeading>) {
     for node in root.descendants() {
         if let NodeValue::Heading(ref heading) = node.data.borrow().value {
             let mut text_content = Vec::with_capacity(30);
@@ -51,10 +51,11 @@ fn extract_headings<'a>(root: &'a AstNode<'a>, headings: &mut Vec<PageHeadings>)
             let mut anchorizer = Anchorizer::new();
             let id = anchorizer.anchorize(text.clone());
 
-            headings.push(PageHeadings {
+            headings.push(PageHeading {
                 level: heading.level,
                 id,
-                text,
+                title: text,
+                children: vec![]
             });
         }
     }

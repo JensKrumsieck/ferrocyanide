@@ -1,18 +1,23 @@
+use serde::Serialize;
+
 use super::{frontmatter::Frontmatter, markdown::render_html};
 use std::{fs, path::PathBuf};
 
-#[derive(Default, Clone, Debug)]
+#[derive(Default, Clone, Debug, Serialize)]
 pub struct Page {
+    #[serde(flatten)]
     pub frontmatter: Frontmatter,
+    pub outline: Vec<PageHeading>,
+    #[serde(skip_serializing)]
     pub content: String,
-    pub outline: Vec<PageHeadings>,
 }
 
-#[derive(Default, Clone, Debug)]
-pub struct PageHeadings {
+#[derive(Default, Clone, Debug, Serialize)]
+pub struct PageHeading {
     pub level: u8,
     pub id: String,
-    pub text: String,
+    pub title: String,
+    pub children: Vec<PageHeading>,
 }
 
 impl Page {
@@ -26,6 +31,7 @@ impl Page {
         let mut frontmatter = Frontmatter::read(content).unwrap_or_default();
 
         let html = render_html(content, &mut headings, &mut frontmatter)?;
+        headings = build_heading_tree(&headings);
 
         Ok(Page {
             frontmatter,
@@ -33,6 +39,37 @@ impl Page {
             outline: headings,
         })
     }
+}
+
+pub fn build_heading_tree(flat: &[PageHeading]) -> Vec<PageHeading> {
+    let mut stack: Vec<(u8, Rc<RefCell<PageHeading>>)> = vec![];
+    let mut roots: Vec<Rc<RefCell<PageHeading>>> = vec![];
+
+    for heading in flat {
+        let node = Rc::new(RefCell::new(PageHeading {
+            level: heading.level,
+            id: heading.id.clone(),
+            title: heading.title.clone(),
+            children: vec![],
+        }));
+
+        while let Some((lvl, _)) = stack.last() {
+            if *lvl < heading.level {
+                break;
+            }
+            stack.pop();
+        }
+
+        if let Some((_, parent)) = stack.last() {
+            parent.borrow_mut().children.push(node.borrow().clone());
+        } else {
+            roots.push(Rc::clone(&node));
+        }
+
+        stack.push((heading.level, node));
+    }
+
+    roots.into_iter().map(|rc| rc.borrow().clone()).collect()
 }
 
 #[cfg(test)]
@@ -55,7 +92,7 @@ Hello, world
         assert_eq!(page.frontmatter.description, Some("Test Description".to_string()));
         assert_eq!(page.outline.len(), 1);
         assert_eq!(page.outline[0].level, 1);
-        assert_eq!(page.outline[0].text, "Test Heading");
+        assert_eq!(page.outline[0].title, "Test Heading");
         assert_eq!(page.outline[0].id, "test-heading");
     }
 

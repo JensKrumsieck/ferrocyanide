@@ -27,6 +27,7 @@ pub fn render(filename: impl AsRef<Path>, config: &AppConfig) -> anyhow::Result<
     }
 
     let page = &config.library[&filename.as_ref().to_path_buf()];
+    context.insert("page", page);
     context.insert("content", &page.content);
 
     let rendered = tera.render(&template, &context).unwrap();

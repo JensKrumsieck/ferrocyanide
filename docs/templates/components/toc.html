@@ -1,0 +1,9 @@
+{% if page.outline | length > 0 %}
+<nav>
+    <ul>
+        {% for item in page.outline %}
+        {% include "components/toc-item.html" %}
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}

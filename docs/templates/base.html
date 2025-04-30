@@ -9,7 +9,7 @@
         content="{% block description %}{{ config.project.description }}{% endblock description %}">
     <meta name="color-scheme" content="light dark">
     {% block head %}
-    <title>{% block title %}{%if title %}{{title}} - {% endif %}{{config.project.title}}{% endblock %}</title>
+    <title>{% block title %}{%if page.title %}{{page.title}} - {% endif %}{{config.project.title}}{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" />
     {% endblock head %}
 </head>
@@ -20,6 +20,7 @@
     </header>
     {% block upper_containers %}{%endblock %}
     <main class="container">
+        {% include "components/toc.html" %}
         {% block content %}{{content | safe}}{% endblock %}
     </main>
     <script type="text/javascript" src="https://yohn.github.io/PicoCSS/js/SwitchColorMode.js"></script>
