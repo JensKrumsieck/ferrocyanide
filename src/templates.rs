@@ -8,6 +8,7 @@ pub static TEMPLATES: Lazy<Tera> = Lazy::new(|| {
         ("__builtins/error.html", include_str!("builtins/error.html")),
         ("__builtins/toc-item.html", include_str!("builtins/toc-item.html")),
         ("__builtins/toc.html", include_str!("builtins/toc.html")),
+        ("__builtins/theme_switch.html", include_str!("builtins/theme_switch.html")),
     ])
     .unwrap();
     tera
