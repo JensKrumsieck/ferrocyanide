@@ -9,7 +9,7 @@ use axum::{
     response::{Html, IntoResponse, Redirect},
     routing::get,
 };
-use tower_http::{services::ServeDir, trace::TraceLayer};
+use tower_http::{compression::CompressionLayer, decompression::RequestDecompressionLayer, services::ServeDir, trace::TraceLayer};
 
 pub(crate) fn app(config: AppConfig) -> Router {
     axum::Router::new()
@@ -18,6 +18,8 @@ pub(crate) fn app(config: AppConfig) -> Router {
         .fallback(handler)
         .with_state(config)
         .layer(TraceLayer::new_for_http().on_failure(()))
+        .layer(RequestDecompressionLayer::new())
+        .layer(CompressionLayer::new())
         .layer(middleware::from_fn(redirect_index))
 }
 
