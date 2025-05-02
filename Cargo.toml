@@ -10,6 +10,7 @@ bon = "3.6.3"
 clap = { version = "4.5.37", features = ["derive"] }
 comrak = "0.39.0"
 once_cell = "1.21.3"
+pathdiff = "0.2.3"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_yaml = "0.9.34"
 tera = "1.20.0"

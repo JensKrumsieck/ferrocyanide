@@ -1,8 +1,9 @@
 use axum::http::StatusCode;
 use config::AppConfig;
+use content::page::{NavItem, filename_to_url};
 use serde_yaml::Value;
 use std::{collections::HashMap, fs, path::Path};
-use templates::{load_templates, TEMPLATES};
+use templates::{TEMPLATES, load_templates};
 
 pub mod cli;
 pub mod config;
@@ -38,6 +39,18 @@ pub fn render_page(filename: impl AsRef<Path>, config: &AppConfig) -> anyhow::Re
         }
     }
 
+    // get library tree
+    let nav = config
+        .library
+        .iter()
+        .filter(|(key, _)| key.starts_with(parent_dir.to_string_lossy().into_owned()))
+        .map(|(key, value)| NavItem {
+            url: filename_to_url(key, config),
+            title: value.frontmatter.title.clone().unwrap(),
+        })
+        .collect::<Vec<_>>();
+    context.insert("sitenav", &nav);
+
     let page = &config.library[&filename.as_ref().to_path_buf()];
     context.insert("page", page);
     context.insert("content", &page.content);
@@ -53,9 +66,9 @@ pub fn render_error(config: &AppConfig, code: StatusCode) -> Option<String> {
     context.insert("message", &code.canonical_reason());
     if let Ok(tera) = load_templates(config) {
         if let Ok(html) = tera.render("error.html", &context) {
-            return Some(html)
-        } 
-        return tera.render("__builtins/error.html", &context).ok()
+            return Some(html);
+        }
+        return tera.render("__builtins/error.html", &context).ok();
     }
     TEMPLATES.render("__builtins/error.html", &context).ok()
 }

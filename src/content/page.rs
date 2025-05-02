@@ -1,5 +1,6 @@
 use super::{frontmatter::Frontmatter, markdown::render_html};
-use serde::Serialize;
+use crate::config::AppConfig;
+use serde::{Deserialize, Serialize};
 use std::{cmp::Ordering, fs, path::PathBuf};
 
 #[derive(Default, Clone, Debug, Serialize)]
@@ -40,7 +41,21 @@ impl Page {
     }
 }
 
-fn build_tree(flat: &[PageHeading]) -> Vec<PageHeading>{
+#[derive(Serialize, Deserialize)]
+pub struct NavItem {
+    pub url: String,
+    pub title: String,
+}
+
+pub fn filename_to_url(filename: &PathBuf, config: &AppConfig) -> String {
+    let content_dir = config.folder.join("content");
+    let relative_to_root = &pathdiff::diff_paths(filename, content_dir).unwrap_or(filename.to_owned());
+    let folder = relative_to_root.parent().unwrap_or(relative_to_root);
+    let filename = relative_to_root.file_stem().unwrap(); //we are sure it is a file
+    format!("/{}", folder.join(filename).to_string_lossy())
+}
+
+fn build_tree(flat: &[PageHeading]) -> Vec<PageHeading> {
     let mut tree = vec![];
     let mut last_item: Option<&mut PageHeading> = None;
 
@@ -55,7 +70,7 @@ fn build_tree(flat: &[PageHeading]) -> Vec<PageHeading>{
         }
         last_item = tree.last_mut();
     }
-    tree 
+    tree
 }
 
 #[cfg(test)]
