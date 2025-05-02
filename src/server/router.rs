@@ -1,4 +1,4 @@
-use crate::{render, render_error};
+use crate::{content::COLOR_PICKER_JS, render, render_error};
 
 use super::AppConfig;
 use axum::{
@@ -7,11 +7,13 @@ use axum::{
     http::{StatusCode, Uri},
     middleware::{self, Next},
     response::{Html, IntoResponse, Redirect},
+    routing::get,
 };
 use tower_http::{services::ServeDir, trace::TraceLayer};
 
 pub(crate) fn app(config: AppConfig) -> Router {
     axum::Router::new()
+        .route("/js/SwitchColorMode.js", get(COLOR_PICKER_JS))
         .nest_service("/assets", ServeDir::new(config.folder.join("assets")))
         .fallback(handler)
         .with_state(config)

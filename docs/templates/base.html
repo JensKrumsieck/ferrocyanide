@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
         content="{% block description %}{{ config.project.description }}{% endblock description %}">
@@ -23,7 +23,7 @@
         {% include "__builtins/toc.html" %}
         {% block content %}{{content | safe}}{% endblock %}
     </main>
-    <script type="text/javascript" src="https://yohn.github.io/PicoCSS/js/SwitchColorMode.js"></script>
+    <script type="text/javascript" src="js/SwitchColorMode.js"></script>
 </body>
 
 </html>

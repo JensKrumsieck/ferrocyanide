@@ -18,6 +18,7 @@ pub struct AppConfig {
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct ProjectConfig {
     pub project: Option<ProjectMetadata>,
+    //TODO: Markdown parser cfg
 }
 
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
