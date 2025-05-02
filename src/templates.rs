@@ -5,7 +5,7 @@ use tera::Tera;
 pub static TEMPLATES: Lazy<Tera> = Lazy::new(|| {
     let mut tera = Tera::default();
     tera.add_raw_templates(vec![
-        ("__builtins/404.html", include_str!("builtins/404.html")),
+        ("__builtins/error.html", include_str!("builtins/error.html")),
         ("__builtins/toc-item.html", include_str!("builtins/toc-item.html")),
         ("__builtins/toc.html", include_str!("builtins/toc.html")),
     ])

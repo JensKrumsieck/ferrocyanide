@@ -1,4 +1,4 @@
-use crate::render;
+use crate::{render, render_error};
 
 use super::AppConfig;
 use axum::{
@@ -19,7 +19,7 @@ pub(crate) fn app(config: AppConfig) -> Router {
         .layer(middleware::from_fn(redirect_index))
 }
 
-pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> Result<Html<String>, StatusCode> {
+pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> impl IntoResponse {
     let path = uri.path();
     let path = path.trim_start_matches('/').trim_end_matches('/');
     let path = if path.is_empty() { "index" } else { path };
@@ -34,9 +34,16 @@ pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> Result<Html<Stri
     };
 
     if filename.exists() {
-        Ok(Html(render(&filename, &ctx).map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?))
+        match render(&filename, &ctx) {
+            Ok(html) => (StatusCode::OK, Html(html)).into_response(),
+            Err(_) => (StatusCode::INTERNAL_SERVER_ERROR, Html("Internal Server Error")).into_response(),
+        }
     } else {
-        Err(StatusCode::NOT_FOUND)
+        (
+            StatusCode::NOT_FOUND,
+            Html(render_error(&ctx, StatusCode::NOT_FOUND).unwrap_or("Unhandled Error occured".into())),
+        )
+            .into_response()
     }
 }
 
