@@ -1,8 +1,9 @@
-use std::{collections::HashMap, path::{Path, PathBuf}};
-
-use serde::{Deserialize, Serialize};
-
 use crate::content::page::Page;
+use serde::{Deserialize, Serialize};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+};
 
 pub fn get_config_path(project_dir: impl AsRef<Path>) -> PathBuf {
     project_dir.as_ref().join("config.toml")
@@ -18,6 +19,7 @@ pub struct AppConfig {
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct ProjectConfig {
     pub project: Option<ProjectMetadata>,
+    pub nav: Option<HashMap<String, String>>,
     //TODO: Markdown parser cfg
 }
 

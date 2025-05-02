@@ -41,7 +41,7 @@ impl Page {
     }
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct NavItem {
     pub url: String,
     pub title: String,

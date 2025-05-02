@@ -1,3 +1,7 @@
 [project]
 title = "Ferrocyanide"
 description = "Some weird app"
+
+[nav]
+Start = "/"
+Documentation = "/docs"
