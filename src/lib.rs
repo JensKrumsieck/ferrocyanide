@@ -2,7 +2,7 @@ use axum::http::StatusCode;
 use config::AppConfig;
 use serde_yaml::Value;
 use std::{collections::HashMap, fs, path::Path};
-use templates::load_templates;
+use templates::{load_templates, TEMPLATES};
 
 pub mod cli;
 pub mod config;
@@ -51,6 +51,11 @@ pub fn render_error(config: &AppConfig, code: StatusCode) -> Option<String> {
     let mut context = tera::Context::new();
     context.insert("statuscode", &code.as_u16());
     context.insert("message", &code.canonical_reason());
-    let tera = load_templates(config).ok()?;
-    Some(tera.render("__builtins/error.html", &context).unwrap())
+    if let Ok(tera) = load_templates(config) {
+        if let Ok(html) = tera.render("error.html", &context) {
+            return Some(html)
+        } 
+        return tera.render("__builtins/error.html", &context).ok()
+    }
+    TEMPLATES.render("__builtins/error.html", &context).ok()
 }
