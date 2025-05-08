@@ -1,4 +1,4 @@
-use crate::{CONTEXT, Context, read_config, render};
+use crate::{CONTEXT, Context, content::COLOR_PICKER_JS, read_config, render};
 use std::{
     ffi::OsStr,
     fs, io,
@@ -13,6 +13,9 @@ pub fn build(folder: Option<PathBuf>) -> anyhow::Result<()> {
     let root = folder.unwrap_or_default();
     let content = root.join("content");
     copy_dir_all(root.join("assets"), out_dir.join("assets"))?;
+
+    fs::create_dir_all(root.join("js"))?;
+    fs::write(root.join("js").join("SwitchColorMode.js"), COLOR_PICKER_JS)?;
 
     let config = read_config(Some(root))?;
 
