@@ -25,7 +25,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: test
-        run: cargo run test
+        run: cargo test
       - name: build
         run: cargo run build docs
       - name: Upload artifact
