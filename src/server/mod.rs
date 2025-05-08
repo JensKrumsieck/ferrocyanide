@@ -27,7 +27,7 @@ pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
 }
 
 fn read_config(folder: Option<PathBuf>) -> anyhow::Result<AppConfig> {
-    let folder = folder.unwrap_or(PathBuf::from("content"));
+    let folder = folder.unwrap_or(PathBuf::from("."));
     let config_file = get_config_path(&folder);
 
     let project_config = if config_file.exists() {
