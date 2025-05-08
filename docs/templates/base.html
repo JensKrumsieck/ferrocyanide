@@ -23,7 +23,7 @@
         {% include "__builtins/toc.html" %}
         {% block content %}{{content | safe}}{% endblock %}
     </main>
-    <script type="text/javascript" src="/js/SwitchColorMode.js"></script>
+    <script type="text/javascript" src="{{ "/js/SwitchColorMode.js" | url }}"></script>
 </body>
 
 </html>

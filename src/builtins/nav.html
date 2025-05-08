@@ -4,7 +4,7 @@
     {% for item in config.nav %}
     {%for title, url in item %}
     <li {% if path == url %} class="active" {% endif %}>
-        <a href="{{url}}">
+        <a href="{{ url | url }}">
             {{title}}
         </a>
     </li>

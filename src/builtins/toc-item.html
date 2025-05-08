@@ -1,5 +1,5 @@
 <li class="level-{{ item.level }}">
-    <a href="#{{ item.id }}">{{ item.title }}</a>
+    <a href="#{{ item.id | url }}">{{ item.title }}</a>
     {% if item.children | length > 0 %}
     <nav>
         <ul>
