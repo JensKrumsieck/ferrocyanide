@@ -1,7 +1,7 @@
 project:
   title: Ferrocyanide
   description: Some weird app
-
+  rootDir: /ferrocyanide
 nav:
 - Start: /
 - Documentation: /docs

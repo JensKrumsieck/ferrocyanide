@@ -1,5 +1,5 @@
 pub(crate) mod router;
-use crate::read_config;
+use crate::{read_config, Context, CONTEXT};
 use router::app;
 use std::path::PathBuf;
 use tokio::net::TcpListener;
@@ -7,6 +7,7 @@ use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
+    *CONTEXT.write().unwrap() = Context::Serve;
     tracing_subscriber::registry()
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env()

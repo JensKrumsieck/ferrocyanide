@@ -1,11 +1,13 @@
 use axum::http::{StatusCode, Uri};
 use config::{AppConfig, ProjectConfig, get_config_path};
 use content::page::{NavItem, filename_to_url};
+use once_cell::sync::Lazy;
 use serde_yaml::Value;
 use std::{
     collections::HashMap,
     fs,
     path::{Path, PathBuf},
+    sync::RwLock,
 };
 use templates::{TEMPLATES, load_templates};
 
@@ -15,6 +17,14 @@ pub mod config;
 pub mod content;
 pub mod server;
 pub mod templates;
+
+#[derive(PartialEq)]
+enum Context {
+    Build,
+    Serve,
+}
+
+static CONTEXT: Lazy<RwLock<Context>> = Lazy::new(|| RwLock::new(Context::Serve));
 
 pub fn render(markdown: impl AsRef<Path>, config: &AppConfig) -> anyhow::Result<String> {
     render_page(markdown, config)

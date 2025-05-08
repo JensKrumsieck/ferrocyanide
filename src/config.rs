@@ -27,6 +27,8 @@ pub struct ProjectConfig {
 pub struct ProjectMetadata {
     pub title: Option<String>,
     pub description: Option<String>,
+    #[serde(rename = "rootDir")]
+    pub root_dir: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]

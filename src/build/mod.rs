@@ -1,4 +1,4 @@
-use crate::{read_config, render};
+use crate::{CONTEXT, Context, read_config, render};
 use std::{
     ffi::OsStr,
     fs, io,
@@ -6,6 +6,7 @@ use std::{
 };
 
 pub fn build(folder: Option<PathBuf>) -> anyhow::Result<()> {
+    *CONTEXT.write().unwrap() = Context::Build;
     let out_dir = Path::new("dist");
     fs::remove_dir_all(out_dir).ok(); //ignore if fails
     fs::create_dir(out_dir)?;
