@@ -10,8 +10,13 @@
     <input type="checkbox" id="hamburger" />
     <label for="hamburger" style="font-size: calc(var(--pico-font-size) * 1.5);">&#x2261;</label>
     <ul role="list">
-        {% for title, link in config.nav %}
-        <li role="listitem"><a href="{{ link }}">{{ title }}</a></li>
-        {% endfor %}
+        {% for item in config.nav %}
+        {%for title, url in item %}
+        <li>
+            <a href="{{url}}">
+                {{title}}
+            </a>
+        </li>
+        {% endfor %} {% endfor %}
     </ul>
 </nav>

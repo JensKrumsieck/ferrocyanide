@@ -6,7 +6,7 @@ use std::{
 };
 
 pub fn get_config_path(project_dir: impl AsRef<Path>) -> PathBuf {
-    project_dir.as_ref().join("config.toml")
+    project_dir.as_ref().join("config.yaml")
 }
 
 #[derive(Default, Clone, Debug)]
@@ -19,7 +19,7 @@ pub struct AppConfig {
 #[derive(Deserialize, Serialize, Debug, Default, Clone)]
 pub struct ProjectConfig {
     pub project: Option<ProjectMetadata>,
-    pub nav: Option<HashMap<String, String>>,
+    pub nav: Option<Vec<NavItem>>,
     //TODO: Markdown parser cfg
 }
 
@@ -27,6 +27,12 @@ pub struct ProjectConfig {
 pub struct ProjectMetadata {
     pub title: Option<String>,
     pub description: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Debug, Default, Clone)]
+pub struct NavItem {
+    #[serde(flatten)]
+    pub item: HashMap<String, String>,
 }
 
 #[cfg(test)]
@@ -37,17 +43,17 @@ mod tests {
     fn test_get_config_path() {
         let project_dir = PathBuf::from("/path/to/project");
         let config_path = get_config_path(&project_dir);
-        assert_eq!(config_path, PathBuf::from("/path/to/project/config.toml"));
+        assert_eq!(config_path, PathBuf::from("/path/to/project/config.yaml"));
     }
 
     #[test]
     fn test_read_config() {
         let config = r#"
-[project]
-title = "Ferrocyanide"
-description = "A project about Ferrocyanide"
+project:
+    title: Ferrocyanide
+    description: A project about Ferrocyanide
 "#;
-        let config: ProjectConfig = toml::from_str(config).unwrap();
+        let config: ProjectConfig = serde_yaml::from_str(config).unwrap();
 
         if let Some(project) = &config.project {
             assert_eq!(project.title, Some("Ferrocyanide".to_string()));

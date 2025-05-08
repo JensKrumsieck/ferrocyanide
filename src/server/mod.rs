@@ -1,5 +1,4 @@
 pub(crate) mod router;
-
 use crate::{
     config::{AppConfig, ProjectConfig, get_config_path},
     content,
@@ -32,14 +31,13 @@ fn read_config(folder: Option<PathBuf>) -> anyhow::Result<AppConfig> {
     let config_file = get_config_path(&folder);
 
     let project_config = if config_file.exists() {
-        let config_file = fs::read_to_string(config_file)?;
-        toml::from_str::<ProjectConfig>(&config_file).unwrap_or_default()
+        let config_file = fs::read_to_string(&config_file)?;
+        serde_yaml::from_str::<ProjectConfig>(&config_file).unwrap()
     } else {
         ProjectConfig::default()
     };
-    
     let library = content::read_files(&folder)?;
-
+    println!("{project_config:#?}");
     Ok(AppConfig {
         folder,
         project_config,
