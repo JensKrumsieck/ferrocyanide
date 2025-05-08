@@ -12,7 +12,7 @@ use tower_http::{compression::CompressionLayer, decompression::RequestDecompress
 
 pub(crate) fn app(config: AppConfig) -> Router {
     axum::Router::new()
-        .route("/js/SwitchColorMode.js", get(COLOR_PICKER_JS))
+        .route("/js/SwitchColorMode.js", get(color_picker))
         .nest_service("/assets", ServeDir::new(config.folder.join("assets")))
         .fallback(handler)
         .with_state(config)
@@ -51,4 +51,8 @@ async fn redirect_index(req: Request, next: Next) -> Result<impl IntoResponse, S
     }
 
     Ok(next.run(req).await)
+}
+
+async fn color_picker() -> impl IntoResponse {
+    ([("content-type", "text/javascript")], COLOR_PICKER_JS)
 }
