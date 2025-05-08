@@ -14,8 +14,8 @@ pub fn build(folder: Option<PathBuf>) -> anyhow::Result<()> {
     let content = root.join("content");
     copy_dir_all(root.join("assets"), out_dir.join("assets"))?;
 
-    fs::create_dir_all(root.join("js"))?;
-    fs::write(root.join("js").join("SwitchColorMode.js"), COLOR_PICKER_JS)?;
+    fs::create_dir_all(out_dir.join("js"))?;
+    fs::write(out_dir.join("js").join("SwitchColorMode.js"), COLOR_PICKER_JS)?;
 
     let config = read_config(Some(root))?;
 
