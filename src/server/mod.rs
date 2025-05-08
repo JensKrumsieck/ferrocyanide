@@ -1,10 +1,7 @@
 pub(crate) mod router;
-use crate::{
-    config::{AppConfig, ProjectConfig, get_config_path},
-    content,
-};
+use crate::read_config;
 use router::app;
-use std::{fs, path::PathBuf};
+use std::path::PathBuf;
 use tokio::net::TcpListener;
 use tracing::info;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
@@ -24,23 +21,4 @@ pub async fn serve(folder: Option<PathBuf>) -> anyhow::Result<()> {
     info!("Listening on http://{}", listener.local_addr()?);
     axum::serve(listener, app(config)).await?;
     Ok(())
-}
-
-fn read_config(folder: Option<PathBuf>) -> anyhow::Result<AppConfig> {
-    let folder = folder.unwrap_or(PathBuf::from("."));
-    let config_file = get_config_path(&folder);
-
-    let project_config = if config_file.exists() {
-        let config_file = fs::read_to_string(&config_file)?;
-        serde_yaml::from_str::<ProjectConfig>(&config_file).unwrap()
-    } else {
-        ProjectConfig::default()
-    };
-    let library = content::read_files(&folder)?;
-
-    Ok(AppConfig {
-        folder,
-        project_config,
-        library,
-    })
 }

@@ -1,5 +1,4 @@
-use super::AppConfig;
-use crate::{content::COLOR_PICKER_JS, render, render_error, resolve_filename};
+use crate::{config::AppConfig, content::COLOR_PICKER_JS, render, render_error, resolve_filename};
 use axum::{
     Router,
     extract::{Request, State},

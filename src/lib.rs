@@ -1,5 +1,5 @@
 use axum::http::{StatusCode, Uri};
-use config::AppConfig;
+use config::{AppConfig, ProjectConfig, get_config_path};
 use content::page::{NavItem, filename_to_url};
 use serde_yaml::Value;
 use std::{
@@ -9,6 +9,7 @@ use std::{
 };
 use templates::{TEMPLATES, load_templates};
 
+pub mod build;
 pub mod cli;
 pub mod config;
 pub mod content;
@@ -55,7 +56,7 @@ pub fn render_page(filename: impl AsRef<Path>, config: &AppConfig) -> anyhow::Re
         .collect::<Vec<_>>();
     context.insert("sitenav", &nav);
     context.insert("path", &resolve_path(filename.as_ref(), &config.folder));
-    
+
     let page = &config.library[&filename.as_ref().to_path_buf()];
     context.insert("page", page);
     context.insert("content", &page.content);
@@ -76,6 +77,25 @@ pub fn render_error(config: &AppConfig, code: StatusCode) -> Option<String> {
         return tera.render("__builtins/error.html", &context).ok();
     }
     TEMPLATES.render("__builtins/error.html", &context).ok()
+}
+
+fn read_config(folder: Option<PathBuf>) -> anyhow::Result<AppConfig> {
+    let folder = folder.unwrap_or(PathBuf::from("."));
+    let config_file = get_config_path(&folder);
+
+    let project_config = if config_file.exists() {
+        let config_file = fs::read_to_string(&config_file)?;
+        serde_yaml::from_str::<ProjectConfig>(&config_file).unwrap()
+    } else {
+        ProjectConfig::default()
+    };
+    let library = content::read_files(&folder)?;
+
+    Ok(AppConfig {
+        folder,
+        project_config,
+        library,
+    })
 }
 
 fn resolve_filename(uri: &Uri, root_dir: &Path) -> PathBuf {

@@ -11,5 +11,10 @@ pub struct Cli {
 #[derive(Subcommand)]
 pub enum Commands {
     #[command(about = "Serves the site in development mode")]
-    Serve { folder: Option<PathBuf> },
+    Serve {
+        folder: Option<PathBuf>,
+    },
+    Build {
+        folder: Option<PathBuf>,
+    },
 }
