@@ -37,7 +37,7 @@ fn read_config(folder: Option<PathBuf>) -> anyhow::Result<AppConfig> {
         ProjectConfig::default()
     };
     let library = content::read_files(&folder)?;
-    println!("{project_config:#?}");
+
     Ok(AppConfig {
         folder,
         project_config,

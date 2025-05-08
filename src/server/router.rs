@@ -1,5 +1,5 @@
 use super::AppConfig;
-use crate::{content::COLOR_PICKER_JS, render, render_error};
+use crate::{content::COLOR_PICKER_JS, render, render_error, resolve_filename};
 use axum::{
     Router,
     extract::{Request, State},
@@ -23,19 +23,7 @@ pub(crate) fn app(config: AppConfig) -> Router {
 }
 
 pub(crate) async fn handler(ctx: State<AppConfig>, uri: Uri) -> impl IntoResponse {
-    let path = uri.path();
-    let path = path.trim_start_matches('/').trim_end_matches('/');
-    let path = if path.is_empty() { "index" } else { path };
-
-    let content_dir = ctx.folder.join("content");
-    let filename = content_dir.join(format!("{path}.md"));
-
-    let filename = if filename.exists() {
-        filename
-    } else {
-        content_dir.join(format!("{path}/index.md"))
-    };
-
+    let filename = resolve_filename(&uri, &ctx.folder);
     if filename.exists() {
         match render(&filename, &ctx) {
             Ok(html) => (StatusCode::OK, Html(html)).into_response(),

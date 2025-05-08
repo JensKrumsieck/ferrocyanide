@@ -1,8 +1,12 @@
-use axum::http::StatusCode;
+use axum::http::{StatusCode, Uri};
 use config::AppConfig;
 use content::page::{NavItem, filename_to_url};
 use serde_yaml::Value;
-use std::{collections::HashMap, fs, path::Path};
+use std::{
+    collections::HashMap,
+    fs,
+    path::{Path, PathBuf},
+};
 use templates::{TEMPLATES, load_templates};
 
 pub mod cli;
@@ -50,7 +54,8 @@ pub fn render_page(filename: impl AsRef<Path>, config: &AppConfig) -> anyhow::Re
         })
         .collect::<Vec<_>>();
     context.insert("sitenav", &nav);
-
+    context.insert("path", &resolve_path(filename.as_ref(), &config.folder));
+    
     let page = &config.library[&filename.as_ref().to_path_buf()];
     context.insert("page", page);
     context.insert("content", &page.content);
@@ -71,4 +76,29 @@ pub fn render_error(config: &AppConfig, code: StatusCode) -> Option<String> {
         return tera.render("__builtins/error.html", &context).ok();
     }
     TEMPLATES.render("__builtins/error.html", &context).ok()
+}
+
+fn resolve_filename(uri: &Uri, root_dir: &Path) -> PathBuf {
+    let path = uri.path();
+    let path = path.trim_start_matches('/').trim_end_matches('/');
+    let path = if path.is_empty() { "index" } else { path };
+
+    let content_dir = root_dir.join("content");
+    let filename = content_dir.join(format!("{path}.md"));
+
+    if filename.exists() {
+        filename
+    } else {
+        content_dir.join(format!("{path}/index.md"))
+    }
+}
+
+fn resolve_path(path: &Path, root_dir: &Path) -> String {
+    let root_dir = root_dir.join("content");
+    let rel = path.strip_prefix(root_dir).unwrap_or(path);
+
+    let as_str = rel.to_string_lossy().to_string();
+    let as_str = as_str.strip_suffix(".md").unwrap_or(&as_str);
+    let as_str = as_str.strip_suffix("index").unwrap_or(as_str);
+    format!("/{}", as_str.strip_suffix("/").unwrap_or(as_str))
 }
