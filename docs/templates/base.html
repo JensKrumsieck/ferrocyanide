@@ -8,9 +8,9 @@
     <meta name="description"
         content="{% block description %}{{ config.project.description }}{% endblock description %}">
     <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" type="text/css" href="/assets/style.css" />
     {% block head %}
     <title>{% block title %}{%if page.title %}{{page.title}} - {% endif %}{{config.project.title}}{% endblock %}</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yohns/picocss@2.2.10/css/pico.min.css" />
     {% endblock head %}
 </head>
 
@@ -20,10 +20,15 @@
     </header>
     {% block upper_containers %}{%endblock %}
     <main class="container">
-        {% include "__builtins/toc.html" %}
+        {% if page.outline | length > 0 %}
+        <div class="toc-container">
+            <h2>Table of Contents</h2>
+            {% include "__builtins/toc.html" %}
+        </div>
+        {% endif %}
         {% block content %}{{content | safe}}{% endblock %}
     </main>
-    <script type="text/javascript" src="{{ "/js/SwitchColorMode.js" | url }}"></script>
+    <script type="text/javascript" src="{{ " /js/SwitchColorMode.js" | url }}"></script>
 </body>
 
 </html>

@@ -1,0 +1,132 @@
+:root {
+    --bg-dark: #333;
+    --bg-light: #fff;
+    --c-title: #5BB0BA;
+    --c-link: #C15B78;
+    --c-rose: #F6C8CC;
+    --h-nav: 55px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+html[data-theme="light"] {
+    background: var(--bg-light);
+}
+
+html[data-theme="dark"] {
+    background: var(--bg-dark);
+}
+
+.container {
+    width: 90%;
+    margin: auto;
+}
+
+@media screen and (min-width: 720px) {
+    .container {
+        width: 80%;
+    }
+}
+
+
+.toc-container {
+    font-weight: 500;
+    color: var(--c-title);
+}
+
+.toc-container a {
+    color: var(--c-title);
+}
+
+h1 {
+    color: var(--c-title);
+    font-size: 2.25rem;
+}
+
+a {
+    color: var(--c-link)
+}
+
+img {
+    max-width: 100%;
+}
+
+nav[role="navigation"] .theme-toggle {
+    display: flex;
+    width: 24px;
+    height: 24px;
+    border-radius: 100px;
+    background-color: var(--c-title);
+    justify-content: center;
+    align-items: center;
+}
+
+nav[role="navigation"]>hgroup {
+    display: flex;
+    max-height: var(--h-nav);
+}
+
+nav[role="navigation"] img {
+    object-fit: contain;
+    object-position: left;
+}
+
+nav[role="navigation"] {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: var(--h-nav);
+}
+
+nav[role="navigation"]>ul>li {
+    list-style-type: none;
+    font-size: 1.2rem;
+}
+
+nav[role="navigation"]>ul>li>a {
+    text-decoration: none;
+    display: block;
+    padding: 1rem;
+}
+
+nav[role="navigation"]>ul>li.active {
+    font-weight: 700;
+}
+
+
+nav[role="navigation"]>input[type="checkbox"]#hamburger {
+    display: none;
+    user-select: none;
+}
+
+nav[role="navigation"]>ul[role="list"] {
+    display: none;
+    width: 100%;
+    position: absolute;
+    background-color: var(--c-rose);
+    top: var(--h-nav);
+}
+
+nav[role="navigation"]>input[type="checkbox"]:checked~ul[role="list"] {
+    display: block;
+}
+
+@media screen and (min-width: 720px) {
+    nav[role="navigation"]>label[for="hamburger"] {
+        display: none;
+
+    }
+
+    nav[role="navigation"]>ul[role="list"] {
+        display: flex;
+        justify-content: space-between;
+        width: unset;
+        position: unset;
+        background-color: unset;
+        top: unset;
+    }
+
+    .toc-container {
+        float: right;
+    }
+
+}
