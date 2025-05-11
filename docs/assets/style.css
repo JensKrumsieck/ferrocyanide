@@ -10,23 +10,67 @@
 
 html[data-theme="light"] {
     background: var(--bg-light);
+    color: var(--bg-dark);
 }
 
 html[data-theme="dark"] {
     background: var(--bg-dark);
+    color: var(--bg-light);
 }
 
 .container {
     width: 90%;
     margin: auto;
+    font-size: 1rem;
+}
+
+pre {
+    overflow-x: scroll;
+    padding: 0.25em;
+    border-radius: .25em;
+}
+
+html[data-theme="light"] pre {
+    background-color: var(--c-rose) !important;
+}
+
+html[data-theme="light"] label[for="hamburger"] {
+    color: var(--bg-dark);
 }
 
 @media screen and (min-width: 720px) {
     .container {
-        width: 80%;
+        width: 70%;
     }
 }
 
+@media screen and (min-width: 1200px) {
+    aside.sitenav {
+        width: 280px;
+        display: inline-block;
+        height: 60vh;
+        vertical-align: top;
+        padding-top: 40px;
+    }
+
+    article.content {
+        display: inline-block;
+        width: calc(100% - 280px - 20px);
+    }
+}
+
+aside.sitenav>nav>ul {
+    display: block;
+    margin: auto;
+    padding: 0;
+}
+
+aside>nav>ul>li {
+    list-style: none;
+    font-size: 1.15rem;
+    margin-top: 0.5em;
+    font-weight: 500;
+}
 
 .toc-container {
     font-weight: 500;
@@ -35,6 +79,10 @@ html[data-theme="dark"] {
 
 .toc-container a {
     color: var(--c-title);
+}
+
+.theme-toggle {
+    color: var(--bg-light);
 }
 
 h1 {
@@ -63,6 +111,11 @@ nav[role="navigation"] .theme-toggle {
 nav[role="navigation"]>hgroup {
     display: flex;
     max-height: var(--h-nav);
+    flex: 1;
+}
+
+nav[role="navigation"]>hgroup>a {
+    display: flex;
 }
 
 nav[role="navigation"] img {
@@ -104,6 +157,8 @@ nav[role="navigation"]>ul[role="list"] {
     position: absolute;
     background-color: var(--c-rose);
     top: var(--h-nav);
+    left: 0;
+    padding: 0;
 }
 
 nav[role="navigation"]>input[type="checkbox"]:checked~ul[role="list"] {

@@ -3,7 +3,7 @@
 <ul role="list">
     {% for item in config.nav %}
     {%for title, url in item %}
-    <li {% if path == url %} class="active" {% endif %}>
+    <li {% if (url=='/' and path=='/' ) or url !="/" and path is starting_with(url) %} class="active" {% endif %}>
         <a href="{{ url | url }}">
             {{title}}
         </a>
