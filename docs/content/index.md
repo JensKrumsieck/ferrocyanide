@@ -1,26 +1,18 @@
 # Welcome to Ferrocyanide
-Ferrocyanide is a small `proof-of-concept` Static-Site-Generator written in ![Rust][rust-image] 
+Ferrocyanide is a small `proof-of-concept` Static-Site-Generator written in ![Rust](https://img.shields.io/badge/Rust-%23000000.svg?e&logo=rust&logoColor=white). It started as a fun project, however a fully-functional Static-Site-Generator was produced which is used to build these pages.
+_It supports two modes_:
+- `serve`: Serves the website using a Rust Axum Server
+- `build`: Builds static html pages
 
-[rust-image]: https://img.shields.io/badge/Rust-%23000000.svg?e&logo=rust&logoColor=white
-
-Here is some code for your enjoyment:
-```rust
-use clap::Parser;
-use ferrocyanide::{
-    cli::{Cli, Commands},
-    server,
-};
-
-#[tokio::main]
-async fn main() -> anyhow::Result<()> {
-    let cli = Cli::parse();
-    match cli.command {
-        Commands::Serve { folder } => server::serve(folder).await,
-    }
-}
-
+## Usage
 ```
+Usage: ferrocyanide.exe <COMMAND>
 
-## Subheading LOL
+Commands:
+  serve  Serves the site in development mode
+  build  Builds the site as static html files
+  help   Print this message or the help of the given subcommand(s)
 
-# Antoher H1
+Options:
+  -h, --help  Print help
+```

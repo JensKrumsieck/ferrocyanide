@@ -116,7 +116,17 @@ nav[role="navigation"]>hgroup {
 
 nav[role="navigation"]>hgroup>a {
     display: flex;
+    text-decoration: none;
 }
+
+.logo-type {
+    font-size: 2rem;
+    font-weight: 900;
+    vertical-align: middle;
+    margin: 0.15em 0.25em;
+    color: var(--c-title);
+}
+
 
 nav[role="navigation"] img {
     object-fit: contain;
